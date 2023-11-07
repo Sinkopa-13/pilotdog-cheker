@@ -10,15 +10,22 @@ class Checker:
         self.wallet = wallet
 
     async def check(self):
-
-        if config.proxy_use:
-            result = requests.get(url="https://www.pilotdog.tech/api/get_eligible?address="+self.wallet, proxies=config.proxies)
-        else:
-            result = requests.get(url="https://www.pilotdog.tech/api/get_eligible?address="+self.wallet)
-        if result.status_code == 200:
-            data = json.loads(result.text)
-            drop = data['data']['claimable_amount']
-            return self.wallet, drop
+        print(".")
+        for _ in range(5):
+            try:
+                if config.proxy_use:
+                    result = requests.get(url="https://www.pilotdog.tech/api/get_eligible?address="+self.wallet, proxies=config.proxies)
+                else:
+                    result = requests.get(url="https://www.pilotdog.tech/api/get_eligible?address="+self.wallet)
+                if result.status_code == 200:
+                    data = json.loads(result.text)
+                    drop = data['data']['claimable_amount']
+                    return self.wallet, drop
+                break  # Прерываем цикл, если запрос успешно выполнен
+            except requests.exceptions.RequestException as e:
+                # Обрабатываем ошибку подключения
+                print(".")
+                continue  # Повторяем попытку подключения                
         return 'error'
 
 
